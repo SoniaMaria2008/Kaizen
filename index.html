@@ -1,1 +1,445 @@
 <!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Kaizen — aplicatie de management scolar si concentrare pentru elevi. Orar, medii, Pomodoro, gamificare." />
+  <meta name="theme-color" content="#FAF7F2" />
+
+  <title>Kaizen — Studiu, Concentrare, Creștere</title>
+
+  <!-- pt fonturi -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- font - Fraunces (display), Manrope (body), JetBrains Mono (numere) -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" />
+
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="variables.css" />
+  <link rel="stylesheet" href="main.css" />
+  <link rel="stylesheet" href="components.css" />
+
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a1916'/%3E%3Ctext x='16' y='22' font-family='Georgia' font-style='italic' font-size='18' fill='%23faf7f2' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E" />
+</head>
+
+<body>
+  <div class="app">
+
+    <header class="header" role="banner">
+      <div class="header__inner">
+
+        <div class="brand">
+          <span class="brand__mark" aria-hidden="true">K</span>
+          <span>Kaizen</span>
+        </div>
+
+        <!-- pt navigare -->
+        <nav class="nav" role="navigation" aria-label="Navigatie principala">
+          <button class="nav__item" data-route="dashboard" aria-current="page">
+            <span class="nav__icon" aria-hidden="true">◳</span>
+            <span class="nav__label">Dashboard</span>
+          </button>
+          <button class="nav__item" data-route="focus">
+            <span class="nav__icon" aria-hidden="true">◉</span>
+            <span class="nav__label">Focus</span>
+          </button>
+          <button class="nav__item" data-route="rewards">
+            <span class="nav__icon" aria-hidden="true">★</span>
+            <span class="nav__label">Progres</span>
+          </button>
+          <button class="nav__item" data-route="settings">
+            <span class="nav__icon" aria-hidden="true">⚙</span>
+            <span class="nav__label">Setări</span>
+          </button>
+        </nav>
+
+        <!-- indicator de xp -->
+        <div class="xp-badge" title="XP si streak curent">
+          <span class="xp-badge__streak" id="header-streak" aria-label="Streak zile">
+            <span aria-hidden="true">🔥</span>
+            <span id="header-streak-value">0</span>
+          </span>
+          <span class="xp-badge__value">
+            <span id="header-xp-value">0</span> XP
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- content inceput -->
+    <main class="main" id="main-content">
+
+      <!-- dashbord -->
+      <section class="section active" id="section-dashboard" aria-labelledby="dashboard-title">
+        <div class="section__header">
+          <h1 class="section__title" id="dashboard-title">
+            Bună, <em>elev curios</em>.
+          </h1>
+          <p class="section__subtitle">
+            Astăzi e <span id="today-date" class="text-display">…</span>. Hai să vedem ce ai în agenda.
+          </p>
+        </div>
+
+        <div class="grid grid--2">
+
+          <!-- orarul -->
+          <article class="card" aria-labelledby="card-schedule-title">
+            <header class="card__header">
+              <div>
+                <h2 class="card__title" id="card-schedule-title">Orar</h2>
+                <p class="card__subtitle" id="schedule-day-label">…</p>
+              </div>
+              <div class="flex gap-2">
+                <button class="btn btn--ghost btn--sm" id="btn-export-schedule">Export</button>
+                <button class="btn btn--ghost btn--sm" id="btn-import-schedule">Import</button>
+                <input type="file" id="schedule-file-input" accept="application/json" class="hidden" />
+              </div>
+            </header>
+            <div class="card__body">
+              <div id="schedule-today" class="list" role="list" aria-label="Materii astazi">
+              </div>
+              <button class="btn btn--secondary" id="btn-edit-schedule">Editeaza orarul</button>
+            </div>
+          </article>
+
+          <!-- medii+calcul -->
+          <article class="card" aria-labelledby="card-grades-title">
+            <header class="card__header">
+              <div>
+                <h2 class="card__title" id="card-grades-title">Medii</h2>
+                <p class="card__subtitle">Calculator + predictor inteligent</p>
+              </div>
+            </header>
+            <div class="card__body">
+
+              <!-- + nota -->
+              <div class="field">
+                <label class="field__label" for="grade-subject">Materie</label>
+                <select class="select" id="grade-subject" aria-describedby="grade-error">
+                  <option value="">— alege materie —</option>
+                </select>
+              </div>
+
+              <div class="flex gap-2">
+                <div class="field" style="flex: 1;">
+                  <label class="field__label" for="grade-value">Notă (1—10)</label>
+                  <input type="number" class="input" id="grade-value" min="1" max="10" step="0.01"
+                    inputmode="decimal" />
+                </div>
+                <button class="btn btn--primary" id="btn-add-grade" style="align-self: flex-end;">+
+                  Adaugă</button>
+              </div>
+              <p class="field__error" id="grade-error" role="alert"></p>
+
+              <!-- lista medii calculate -->
+               <details>
+                <summary class="text-soft" style="cursor: pointer; font-weight: 500;">
+                  ⊹ Vrei să vezi mediile pe care le ai la momentul actual?
+                </summary>
+                <div class="card__body" style="margin-top: 1rem;">
+                  <div id="grades-summary" role="list" aria-label="Media pe materii"></div>
+                </div>
+              </details>
+
+              <!-- predictor -->
+              <details>
+                <summary class="text-soft" style="cursor: pointer; font-weight: 500;">
+                  ⊹ Vrei sa știi ce note îți trebuie pentru o anumită medie?
+                </summary>
+                <div class="card__body" style="margin-top: 1rem;">
+                  <div class="field">
+                    <label class="field__label" for="predict-subject">Materie</label>
+                    <select class="select" id="predict-subject"></select>
+                  </div>
+                  <div class="flex gap-2">
+                    <div class="field" style="flex: 1;">
+                      <label class="field__label" for="predict-target">Media dorită</label>
+                      <input type="number" class="input" id="predict-target" min="1" max="10" step="0.01"
+                        inputmode="decimal" placeholder="ex: 9.50" />
+                    </div>
+                    <div class="field" style="flex: 1;">
+                      <label class="field__label" for="predict-remaining">Note rămase</label>
+                      <input type="number" class="input" id="predict-remaining" min="1" max="20" step="1"
+                        inputmode="numeric" placeholder="ex: 3" />
+                    </div>
+                  </div>
+                  <button class="btn btn--accent" id="btn-predict">Calculează</button>
+                  <div id="predict-result" aria-live="polite"></div>
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <!-- calendar pt teme + test -->
+          <article class="card" aria-labelledby="card-calendar-title" style="grid-column: 1 / -1;">
+            <header class="card__header">
+              <div>
+                <h2 class="card__title" id="card-calendar-title">Teme &amp; teste</h2>
+                <p class="card__subtitle">Vizibilitate asupra a ce urmează</p>
+              </div>
+              <button class="btn btn--primary btn--sm" id="btn-add-deadline">+ Adaugă</button>
+            </header>
+            <div class="card__body">
+              <div id="deadlines-list" class="deadline-list" role="list">
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- focus -->
+      <section class="section" id="section-focus" aria-labelledby="focus-title">
+        <div class="section__header">
+          <h1 class="section__title" id="focus-title">
+            Modul <em>focus</em>.
+          </h1>
+          <p class="section__subtitle">
+            Pomodoro, widgets, fară distrageri. Dacă părăsesti tab-ul in timpul sesiunii, pierzi XP.
+          </p>
+        </div>
+
+        <div class="grid grid--asymmetric">
+
+          <!-- timer ppomodoro -->
+          <div class="card card--elevated">
+            <div class="timer" id="timer">
+              <div class="timer__progress">
+                <svg viewBox="0 0 100 100" aria-hidden="true">
+                  <circle class="timer__progress-bg" cx="50" cy="50" r="48" />
+                  <circle class="timer__progress-bar" cx="50" cy="50" r="48"
+                    stroke-dasharray="301.59" stroke-dashoffset="0" id="timer-progress-bar" />
+                </svg>
+                <div class="timer__inner">
+                  <div class="timer__display" id="timer-display"
+                    aria-live="polite" aria-label="Timp ramas">25:00</div>
+                  <div class="timer__label" id="timer-label">studiu</div>
+                </div>
+              </div>
+
+              <div class="timer__controls">
+                <button class="btn btn--primary btn--lg" id="btn-timer-start">Start</button>
+                <button class="btn btn--ghost btn--lg" id="btn-timer-reset">Reset</button>
+              </div>
+
+              <details style="margin-top: 0.5rem;">
+                <summary class="text-soft" style="cursor: pointer; font-size: var(--text-sm);">
+                  ⊹ Configurare durate
+                </summary>
+                <div class="flex gap-2" style="margin-top: 1rem;">
+                  <div class="field">
+                    <label class="field__label" for="pomodoro-work">Studiu (min)</label>
+                    <input type="number" class="input" id="pomodoro-work" value="25" min="5" max="90" />
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="pomodoro-break">Pauză (min)</label>
+                    <input type="number" class="input" id="pomodoro-break" value="5" min="1" max="30" />
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <!-- sidebar -->
+          <div class="flex flex-col gap-4">
+            <!-- calculator -->
+            <div class="widget">
+              <h3 class="widget__title">calculator</h3>
+              <div class="calc">
+                <div class="calc__display" id="calc-display" aria-live="polite">0</div>
+                <div class="calc__keys" id="calc-keys" role="group" aria-label="Calculator">
+                </div>
+              </div>
+            </div>
+
+            <!-- citate ranfom -->
+            <div class="widget">
+              <h3 class="widget__title">gand zen</h3>
+              <blockquote class="quote" id="quote-text" aria-live="polite">
+                <span id="quote-content">Loading…</span>
+                <cite class="quote__author" id="quote-author"></cite>
+              </blockquote>
+              <button class="btn btn--ghost btn--sm mt-2" id="btn-new-quote">Alt citat ⟲</button>
+            </div>
+
+            <!-- mucizca -->
+            <div class="widget">
+              <h3 class="widget__title">ambient</h3>
+              <div class="audio-player">
+                <div class="audio-player__tracks" role="group" aria-label="Selecteaza ambient">
+                  <button class="audio-player__track" data-track="lofi">Lo-fi</button>
+                  <button class="audio-player__track" data-track="rain">Ploaie</button>
+                  <button class="audio-player__track" data-track="silence">Liniste</button>
+                </div>
+                <p class="text-mute" style="font-size: var(--text-xs); text-align: center;"
+                  id="audio-status">Nicio sursă selectată</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="section-rewards" aria-labelledby="rewards-title">
+        <div class="section__header">
+          <h1 class="section__title" id="rewards-title">
+            Drumul <em>tau</em>.
+          </h1>
+          <p class="section__subtitle">
+            Kaizen e japoneza pentru "imbunatatire continua". Fiecare sesiune conteaza.
+          </p>
+        </div>
+
+        <!-- nivel -->
+        <article class="card" style="margin-bottom: var(--space-5);">
+          <div class="flex justify-between items-center" style="flex-wrap: wrap; gap: var(--space-4);">
+            <div>
+              <p class="text-mute" style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em;">
+                Nivel curent
+              </p>
+              <h2 class="text-display" style="font-size: var(--text-3xl); font-weight: 300;">
+                <span id="level-name">Boboc</span>
+                <em style="font-style: italic; color: var(--accent-ink-wash);">
+                  · <span id="level-number">1</span></em>
+              </h2>
+            </div>
+            <div style="text-align: right;">
+              <p class="text-mute" style="font-size: var(--text-xs);">
+                <span id="level-xp">0</span> / <span id="level-next-xp">100</span> XP
+              </p>
+              <p class="text-mute" style="font-size: var(--text-xs);">
+                pâna la următorul nivel
+              </p>
+            </div>
+          </div>
+          <div class="progress mt-4">
+            <div class="progress__bar" id="level-progress" style="width: 0%;"></div>
+          </div>
+        </article>
+
+        <!-- stats -->
+        <div class="grid grid--3 mb-4">
+          <div class="stat">
+            <span class="stat__label">Streak</span>
+            <span class="stat__value">
+              <span class="stat__icon">🔥</span>
+              <span id="stat-streak">0</span>
+              <span class="stat__value-unit">zile</span>
+            </span>
+          </div>
+          <div class="stat">
+            <span class="stat__label">Sesiuni focus</span>
+            <span class="stat__value">
+              <span class="stat__icon">◉</span>
+              <span id="stat-sessions">0</span>
+            </span>
+          </div>
+          <div class="stat">
+            <span class="stat__label">Teme finalizate</span>
+            <span class="stat__value">
+              <span class="stat__icon">✓</span>
+              <span id="stat-tasks">0</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- achievemeents -->
+        <article class="card">
+          <header class="card__header">
+            <h2 class="card__title">Realizari</h2>
+            <p class="card__subtitle" id="achievements-count">0/0 deblocate</p>
+          </header>
+          <div class="card__body">
+            <div class="grid grid--3" id="achievements-grid" style="gap: var(--space-3);">
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- settings -->
+      <section class="section" id="section-settings" aria-labelledby="settings-title">
+        <div class="section__header">
+          <h1 class="section__title" id="settings-title">Setări</h1>
+        </div>
+
+        <div class="grid grid--2">
+          <article class="card">
+
+            <h2 class="card__title">Aspect</h2>
+
+            <div class="card__body">
+              <div class="flex justify-between items-center">
+                <label for="toggle-theme" class="field__label">Temă întunecată (Dark)</label>
+                <input type="checkbox" id="toggle-theme" />
+              </div>
+
+              <div class="flex justify-between items-center">
+                <label for="toggle-contrast" class="field__label">Contrast ridicat</label>
+                <input type="checkbox" id="toggle-contrast" />
+              </div>
+
+              <div class="flex justify-between items-center">
+                <label for="toggle-sakura" class="field__label">Sakura</label>
+                <input type="checkbox" id="toggle-sakura" />
+              </div>
+
+              <div class="flex justify-between items-center">
+                <label for="toggle-ocean" class="field__label">Ocean</label>
+                <input type="checkbox" id="toggle-ocean" />
+              </div>
+
+            </div>
+
+          </article>
+
+          <article class="card">
+            <h2 class="card__title">Notificări</h2>
+            <div class="card__body">
+              <p class="text-soft" style="font-size: var(--text-sm);">
+                Activează notificările browserului pentru a fi anunțat când se termină sesiunile Pomodoro
+                și pentru deadline-urile apropiate.
+              </p>
+              <button class="btn btn--secondary" id="btn-enable-notifications">
+                Activează notificări
+              </button>
+              <p class="text-mute" id="notifications-status" style="font-size: var(--text-xs);">
+                Status: necunoscut
+              </p>
+            </div>
+          </article>
+
+          <article class="card" style="grid-column: 1 / -1;">
+            <h2 class="card__title">Date</h2>
+            <div class="card__body">
+              <p class="text-soft" style="font-size: var(--text-sm);">
+                Toate datele sunt stocate local in browserul tău (localStorage). Nimeni altcineva nu are
+                acces la ele. Poți exporta sau șterge datele oricând.
+              </p>
+              <div class="flex gap-2">
+                <button class="btn btn--secondary" id="btn-export-all">Exportă tot (JSON)</button>
+                <button class="btn btn--secondary" id="btn-import-all">Importă</button>
+                <input type="file" id="all-file-input" accept="application/json" class="hidden" />
+                <button class="btn btn--danger" id="btn-reset-all">Resetează tot</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <p>
+        Kaizen © 2025 ·
+        <span class="text-display display-italic">Imbunătățire continua, pas cu pas.</span>
+      </p>
+    </footer>
+
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
+
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
