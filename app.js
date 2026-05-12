@@ -20,12 +20,11 @@ import * as calendarMod from './calendar.js';
 import * as focus from './focus.js';
 import * as widgets from './widgets.js';
 import * as gamification from './gamification.js';
+import * as aiAssistant from './ai-assistant.js';
 
 
-/* 1. NAVG INTRE SECTIUNI
-  
-  setActiveSection- ascunde toate sectiunile, o
-   afiseaza pe cea ceruta, actualizeaza aria-current pe nav */
+
+/* 1. NAVG INTRE SECTIUNI setActiveSection- ascunde toate sectiunile, afiseaza pe cea ceruta, actualizeaza aria-current pe nav */
 function setActiveSection(routeName) {
   /* toate sectiunile principale au id-ul "section-{nume}".
      CSS-ul afiseaza doar sectiunea cu .active (vezi in main.css) */
@@ -425,6 +424,7 @@ function boot() {
   calendarMod.init();
   focus.init();
   widgets.init();
+  aiAssistant.initAIAssistant();
 
   /* gamification ultimul: asculta evenimente de la toti ceilalti */
   gamification.init();

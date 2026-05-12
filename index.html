@@ -54,6 +54,10 @@
             <span class="nav__icon" aria-hidden="true">⚙</span>
             <span class="nav__label">Setări</span>
           </button>
+          <button class="nav__item" data-route="ai">
+            <span class="nav__icon" aria-hidden="true">✦</span>
+            <span class="nav__label">Sensei</span>
+          </button>
         </nav>
 
         <!-- indicator de xp -->
@@ -360,48 +364,41 @@
       <!-- settings -->
       <section class="section" id="section-settings" aria-labelledby="settings-title">
         <div class="section__header">
-          <h1 class="section__title" id="settings-title">Setări</h1>
+          <h1 class="section__title" id="settings-title">Setari</h1>
         </div>
 
         <div class="grid grid--2">
           <article class="card">
-
             <h2 class="card__title">Aspect</h2>
-
             <div class="card__body">
               <div class="flex justify-between items-center">
-                <label for="toggle-theme" class="field__label">Temă întunecată (Dark)</label>
+                <label for="toggle-theme" class="field__label">Tema intunecata (Ink)</label>
                 <input type="checkbox" id="toggle-theme" />
               </div>
-
               <div class="flex justify-between items-center">
-                <label for="toggle-contrast" class="field__label">Contrast ridicat</label>
+                <label for="toggle-contrast" class="field__label"> Contrast ridicat </label>
                 <input type="checkbox" id="toggle-contrast" />
               </div>
-
               <div class="flex justify-between items-center">
-                <label for="toggle-sakura" class="field__label">Sakura</label>
-                <input type="checkbox" id="toggle-sakura" />
+                <label for="toggle-sunsetorange" class="field__label"> Playful Orange</label>
+                <input type="checkbox" id="toggle-sunsetorange" />
               </div>
-
               <div class="flex justify-between items-center">
-                <label for="toggle-ocean" class="field__label">Ocean</label>
-                <input type="checkbox" id="toggle-ocean" />
+                <label for="toggle-green" class="field__label">Deep Green</label>
+                <input type="checkbox" id="toggle-green" />
               </div>
-
             </div>
-
           </article>
 
           <article class="card">
-            <h2 class="card__title">Notificări</h2>
+            <h2 class="card__title">Notificari</h2>
             <div class="card__body">
               <p class="text-soft" style="font-size: var(--text-sm);">
-                Activează notificările browserului pentru a fi anunțat când se termină sesiunile Pomodoro
-                și pentru deadline-urile apropiate.
+                Activeaza notificarile browserului pentru a fi anuntat cand se termina sesiunile Pomodoro
+                si pentru deadline-urile apropiate.
               </p>
               <button class="btn btn--secondary" id="btn-enable-notifications">
-                Activează notificări
+                Activeaza notificari
               </button>
               <p class="text-mute" id="notifications-status" style="font-size: var(--text-xs);">
                 Status: necunoscut
@@ -410,22 +407,81 @@
           </article>
 
           <article class="card" style="grid-column: 1 / -1;">
+            <h2 class="card__title">Asistent AI (Gemini)</h2>
+            <div class="card__body">
+              <p class="text-soft" style="font-size: var(--text-sm);">
+                Sectiunea <strong>Sensei</strong> foloseste Google Gemini API. Cheia ta personala
+                e stocata doar in browserul tau (localStorage) — nu o vede nimeni altcineva.
+                Cheie gratuita: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a>.
+                Necesita conexiune internet.
+              </p>
+              <button class="btn btn--secondary" id="ai-configure">Configureaza cheia API</button>
+            </div>
+          </article>
+
+          <article class="card" style="grid-column: 1 / -1;">
             <h2 class="card__title">Date</h2>
             <div class="card__body">
               <p class="text-soft" style="font-size: var(--text-sm);">
-                Toate datele sunt stocate local in browserul tău (localStorage). Nimeni altcineva nu are
-                acces la ele. Poți exporta sau șterge datele oricând.
+                Toate datele sunt stocate local in browserul tau (localStorage). Nimeni altcineva nu are
+                acces la ele. Poti exporta sau sterge datele oricand.
               </p>
               <div class="flex gap-2">
-                <button class="btn btn--secondary" id="btn-export-all">Exportă tot (JSON)</button>
-                <button class="btn btn--secondary" id="btn-import-all">Importă</button>
+                <button class="btn btn--secondary" id="btn-export-all">Exporta tot (JSON)</button>
+                <button class="btn btn--secondary" id="btn-import-all">Importa</button>
                 <input type="file" id="all-file-input" accept="application/json" class="hidden" />
-                <button class="btn btn--danger" id="btn-reset-all">Resetează tot</button>
+                <button class="btn btn--danger" id="btn-reset-all">Reseteaza tot</button>
               </div>
             </div>
           </article>
         </div>
       </section>
+
+
+      <!-- sensei -->
+      <section class="section" id="section-ai" aria-labelledby="ai-title">
+        <div class="section__header">
+          <h1 class="section__title" id="ai-title">Sensei</h1>
+          <p class="section__subtitle">
+            Tutorul tau pedagogic. Nu da raspunsuri direct — te invata sa le gasesti singur.
+          </p>
+        </div>
+
+        <div class="chat" role="region" aria-label="Conversatie cu asistentul AI">
+          <div class="chat__header">
+            <span class="chat__status" id="ai-status" aria-live="polite">
+              cheie API neconfigurata
+            </span>
+            <div class="chat__actions">
+              <button class="btn btn--ghost btn--sm" id="ai-clear" type="button">
+                Sterge conversatia
+              </button>
+            </div>
+          </div>
+
+          <div class="chat__messages" id="ai-messages" role="log" aria-live="polite" aria-atomic="false">
+            
+          </div>
+
+          <form class="chat__form" id="ai-form" autocomplete="off">
+            <label for="ai-input" class="sr-only">Mesajul tau</label>
+            <textarea
+              class="chat__input"
+              id="ai-input"
+              name="ai-input"
+              rows="1"
+              placeholder="Intreaba-l pe Sensei... (Enter trimite, Shift+Enter linie noua)"
+              maxlength="2000"
+              aria-label="Mesajul tau catre asistentul AI"
+            ></textarea>
+            <button class="btn btn--primary" id="ai-send" type="submit">
+              Trimite
+            </button>
+          </form>
+        </div>
+      </section>
+
+    </main>
 
     </main>
 
