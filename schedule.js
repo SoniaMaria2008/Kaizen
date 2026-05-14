@@ -37,6 +37,7 @@ export function addSubject(name) {
   }
 
   subjects.push(result.value);
+  subjects.sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));  
   storage.set(SUBJECTS_KEY, subjects);
   return { valid: true, value: result.value };
 }
@@ -126,6 +127,8 @@ export function importFromFile(file) {
           .map((s) => escapeHTML(s.trim()))
           .filter((s) => s.length > 0 && s.length <= 60);
 
+        cleanSubjects.sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));
+        
         const cleanWeek = {};
         for (let day = 0; day < 7; day++) {
           const arr = data.schedule.week[day] || [];

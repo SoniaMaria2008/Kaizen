@@ -136,7 +136,10 @@ function renderSummary(container) {
 
   container.innerHTML = '';
   const all = getAllGrades();
-  const subjects = Object.keys(all).filter((s) => all[s].length > 0);
+  /* sortare lexicografica romaneasca, case-insensitive */
+  const subjects = Object.keys(all)
+    .filter((s) => all[s].length > 0)
+    .sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));
 
   if (subjects.length === 0) {
     const empty = document.createElement('p');

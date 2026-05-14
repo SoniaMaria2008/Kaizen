@@ -66,10 +66,6 @@ export function remove(id) {
   storage.set(STORAGE_KEY, list);
 }
 
-/**
- * calculeaza zilele ramase pana la o data.
- * @returns {number} numarul de zile (negativ = trecut)
- */
 export function daysUntil(dateStr) {
   const target = new Date(dateStr);
   target.setHours(0, 0, 0, 0);
