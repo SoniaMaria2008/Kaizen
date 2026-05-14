@@ -364,41 +364,57 @@
       <!-- settings -->
       <section class="section" id="section-settings" aria-labelledby="settings-title">
         <div class="section__header">
-          <h1 class="section__title" id="settings-title">Setari</h1>
+          <h1 class="section__title" id="settings-title">Setări</h1>
         </div>
 
         <div class="grid grid--2">
           <article class="card">
+
             <h2 class="card__title">Aspect</h2>
+
             <div class="card__body">
               <div class="flex justify-between items-center">
-                <label for="toggle-theme" class="field__label">Tema intunecata (Ink)</label>
+                <label for="toggle-theme" class="field__label">Temă întunecată (Dark)</label>
                 <input type="checkbox" id="toggle-theme" />
               </div>
+
               <div class="flex justify-between items-center">
-                <label for="toggle-contrast" class="field__label"> Contrast ridicat </label>
+                <label for="toggle-contrast" class="field__label">Contrast ridicat</label>
                 <input type="checkbox" id="toggle-contrast" />
               </div>
               <div class="flex justify-between items-center">
                 <label for="toggle-sunsetorange" class="field__label"> Playful Orange</label>
                 <input type="checkbox" id="toggle-sunsetorange" />
               </div>
+
               <div class="flex justify-between items-center">
                 <label for="toggle-green" class="field__label">Deep Green</label>
                 <input type="checkbox" id="toggle-green" />
               </div>
+
+                <div class="flex justify-between items-center">
+                <label for="toggle-sakura" class="field__label">Sakura</label>
+                <input type="checkbox" id="toggle-sakura" />
+              </div>
+
+              <div class="flex justify-between items-center">
+                <label for="toggle-ocean" class="field__label">Ocean</label>
+                <input type="checkbox" id="toggle-ocean" />
+              </div>
+
             </div>
+
           </article>
 
           <article class="card">
-            <h2 class="card__title">Notificari</h2>
+            <h2 class="card__title">Notificări</h2>
             <div class="card__body">
               <p class="text-soft" style="font-size: var(--text-sm);">
-                Activeaza notificarile browserului pentru a fi anuntat cand se termina sesiunile Pomodoro
-                si pentru deadline-urile apropiate.
+                Activează notificările browserului pentru a fi anunțat când se termină sesiunile Pomodoro
+                și pentru deadline-urile apropiate.
               </p>
               <button class="btn btn--secondary" id="btn-enable-notifications">
-                Activeaza notificari
+                Activează notificări
               </button>
               <p class="text-mute" id="notifications-status" style="font-size: var(--text-xs);">
                 Status: necunoscut
@@ -407,30 +423,17 @@
           </article>
 
           <article class="card" style="grid-column: 1 / -1;">
-            <h2 class="card__title">Asistent AI (Gemini)</h2>
-            <div class="card__body">
-              <p class="text-soft" style="font-size: var(--text-sm);">
-                Sectiunea <strong>Sensei</strong> foloseste Google Gemini API. Cheia ta personala
-                e stocata doar in browserul tau (localStorage) — nu o vede nimeni altcineva.
-                Cheie gratuita: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a>.
-                Necesita conexiune internet.
-              </p>
-              <button class="btn btn--secondary" id="ai-configure">Configureaza cheia API</button>
-            </div>
-          </article>
-
-          <article class="card" style="grid-column: 1 / -1;">
             <h2 class="card__title">Date</h2>
             <div class="card__body">
               <p class="text-soft" style="font-size: var(--text-sm);">
-                Toate datele sunt stocate local in browserul tau (localStorage). Nimeni altcineva nu are
-                acces la ele. Poti exporta sau sterge datele oricand.
+                Toate datele sunt stocate local in browserul tău (localStorage). Nimeni altcineva nu are
+                acces la ele. Poți exporta sau șterge datele oricând.
               </p>
               <div class="flex gap-2">
-                <button class="btn btn--secondary" id="btn-export-all">Exporta tot (JSON)</button>
-                <button class="btn btn--secondary" id="btn-import-all">Importa</button>
+                <button class="btn btn--secondary" id="btn-export-all">Exportă tot (JSON)</button>
+                <button class="btn btn--secondary" id="btn-import-all">Importă</button>
                 <input type="file" id="all-file-input" accept="application/json" class="hidden" />
-                <button class="btn btn--danger" id="btn-reset-all">Reseteaza tot</button>
+                <button class="btn btn--danger" id="btn-reset-all">Resetează tot</button>
               </div>
             </div>
           </article>

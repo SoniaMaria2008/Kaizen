@@ -1,16 +1,4 @@
-/*
-   app.js — controllerul principal
-   
-   singurul fisier incarcat din index.html (cu type="module").
-   Importa toate modulele si le initializeaza intr-o ordine. nu poluam
-   namespace-ul global window
-
-    -Navigare (dashboard / focus / rewards / settings)
-    -Setari (tema, contrast, notificari, export/import/reset)
-    -mesaje feedback
-    -Initializarea celorlalte module
-    -Mesajul de bun venit cu data curenta
-   ============================================================ */
+/*app.js — controllerul principal*/
 
 import * as storage from './storage.js';
 import { escapeHTML } from './validator.js';
@@ -24,10 +12,8 @@ import * as aiAssistant from './ai-assistant.js';
 
 
 
-/* 1. NAVG INTRE SECTIUNI setActiveSection- ascunde toate sectiunile, afiseaza pe cea ceruta, actualizeaza aria-current pe nav */
+/* NAVG INTRE SECTIUNI setActiveSection- ascunde toate sectiunile, afiseaza pe cea ceruta, actualizeaza aria-current pe nav */
 function setActiveSection(routeName) {
-  /* toate sectiunile principale au id-ul "section-{nume}".
-     CSS-ul afiseaza doar sectiunea cu .active (vezi in main.css) */
   const sections = document.querySelectorAll('.section');
   sections.forEach((sec) => {
     if (sec.id === `section-${routeName}`) {
@@ -63,7 +49,7 @@ function initNavigation() {
 
 
 /*
-   2. SISTEM DE TOAST-URI
+   SISTEM DE TOAST-URI
    aici prindem evenimentul si afisam un element care dispare
    automat dupa 3 secunde
 */
@@ -107,8 +93,7 @@ function initToasts() {
 }
 
 
-/* 3. SETARI: TEMA, CONTRAST*/
-
+/* SETARI: TEMA, CONTRAST*/
 function applyTheme() {
   const isDark = !!storage.get('theme-dark', false);
   if (isDark) {
@@ -118,6 +103,29 @@ function applyTheme() {
   }
   const toggle = document.getElementById('toggle-theme');
   if (toggle) toggle.checked = isDark;
+}
+
+function applyGreen() {
+  const isGreen = !!storage.get('theme-green', false);
+  if (isGreen) {
+    document.documentElement.classList.add('theme-green');
+  } else {
+    document.documentElement.classList.remove('theme-green');
+  }
+  const toggle = document.getElementById('toggle-greenforest');
+  if (toggle) toggle.checked = isGreen;
+}
+
+
+function applyOrange() {
+  const isorange = !!storage.get('theme-sunsetorange', false);
+  if (isorange) {
+    document.documentElement.classList.add('theme-sunsetorange');
+  } else {
+    document.documentElement.classList.remove('theme-sunsetorange');
+  }
+  const toggle = document.getElementById('toggle-sunsetorange');
+  if (toggle) toggle.checked = isorange;
 }
 
 function applyContrast() {
@@ -130,33 +138,33 @@ function applyContrast() {
   const toggle = document.getElementById('toggle-contrast');
   if (toggle) toggle.checked = high;
 }
-
-function applySakura() {
-  const sakura = !!storage.get('theme-sakura', false);
-  if(sakura) {
-    document.documentElement.classList.add('theme-sakura');
-  } else {
-    document.documentElement.classList.remove('theme-sakura');
+  function applySakura() {
+    const sakura = !!storage.get('theme-sakura', false);
+    if(sakura) {
+      document.documentElement.classList.add('theme-sakura');
+    } else {
+      document.documentElement.classList.remove('theme-sakura');
+    }
+  
+    const toggle = document.getElementById('toggle-sakura');
+    if(toggle) toggle.checked = sakura;
   }
-
-  const toggle = document.getElementById('toggle-sakura');
-  if(toggle) toggle.checked = sakura;
-}
-
-function applyOcean() {
-  const ocean = !!storage.get('theme-ocean', false);
-  if(ocean) {
-    document.documentElement.classList.add('theme-ocean');
-  } else {
-    document.documentElement.classList.remove('theme-ocean');
+  
+  function applyOcean() {
+    const ocean = !!storage.get('theme-ocean', false);
+    if(ocean) {
+      document.documentElement.classList.add('theme-ocean');
+    } else {
+      document.documentElement.classList.remove('theme-ocean');
+    }
+  
+    const toggle = document.getElementById('toggle-ocean');
+    if(toggle) toggle.checked = ocean;
   }
-
-  const toggle = document.getElementById('toggle-ocean');
-  if(toggle) toggle.checked = ocean;
-}
+  
 
 function initSettings() {
-  /* Tema */
+  /* Tema. */
   applyTheme();
   const themeToggle = document.getElementById('toggle-theme');
   if (themeToggle) {
@@ -166,7 +174,7 @@ function initSettings() {
     });
   }
 
-  /* Contrast */
+  /* Contrast. */
   applyContrast();
   const contrastToggle = document.getElementById('toggle-contrast');
   if (contrastToggle) {
@@ -176,27 +184,46 @@ function initSettings() {
     });
   }
 
-  /*sakura*/
-  applySakura();
-  const sakuraToggle = document.getElementById('toggle-sakura');
-  if(sakuraToggle) {
-    sakuraToggle.addEventListener('change', () => {
-      storage.set('theme-sakura', sakuraToggle.checked);
-      applySakura();
+  applyGreen();
+  const greenToggle = document.getElementById('toggle-green');
+  if (greenToggle) {
+    greenToggle.addEventListener('change', () => {
+      storage.set('theme-green', greenToggle.checked);
+      applyGreen();
     });
   }
 
-  /*ocean*/
-  applyOcean();
-  const oceanToggle = document.getElementById('toggle-ocean');
-  if (oceanToggle) {
-    oceanToggle.addEventListener('change', () => {
-      storage.set('theme-ocean', oceanToggle.checked); 
-      applyOcean();
+   applyOrange();
+  const orangeToggle = document.getElementById('toggle-sunsetorange');
+  if (orangeToggle) {
+    orangeToggle.addEventListener('change', () => {
+      storage.set('theme-sunsetorange', orangeToggle.checked);
+      applyOrange();
     });
   }
+
+    /sakura/
+    applySakura();
+    const sakuraToggle = document.getElementById('toggle-sakura');
+    if(sakuraToggle) {
+      sakuraToggle.addEventListener('change', () => {
+        storage.set('theme-sakura', sakuraToggle.checked);
+        applySakura();
+      });
+    }
+  
+    /ocean/
+    applyOcean();
+    const oceanToggle = document.getElementById('toggle-ocean');
+    if (oceanToggle) {
+      oceanToggle.addEventListener('change', () => {
+        storage.set('theme-ocean', oceanToggle.checked); 
+        applyOcean();
+      });
+    }
+
 }
-
+  
 
 /*
    4. NOTIFICARI BROWSER

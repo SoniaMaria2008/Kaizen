@@ -289,3 +289,11 @@ a:hover { color: var(--accent-ink-wash); }
 .mb-4 { margin-bottom: var(--space-4); }
 
 .hidden { display: none !important; }
+.hidden { display: none !important; }
+.theme-sunsetorange .timer-display, 
+.theme-sunsetorange .timer-container { 
+    background: radial-gradient(circle, rgba(86, 24, 24, 0.4) 0%, transparent 70%) !important;
+}
+.theme-sunsetorange .timer-clock {
+    color: var(--ink) !important;
+}
