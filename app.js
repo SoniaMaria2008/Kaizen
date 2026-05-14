@@ -59,21 +59,21 @@ function showToast(msg, type = 'info') {
   if (!container) return;
 
   const toast = document.createElement('div');
-  /* yype validat: doar valori din CSS (toast--success, --warning,
+  /* type validat: doar valori din CSS (toast--success, --warning,
      --danger, --info). Nu trm type="<script>",
      clasa devine "toast toast--info" prin fallback. textContent
-     + className safe -> anti-XSS. */
+     + className safe -> anti-XSS */
 
   const validTypes = ['success', 'warning', 'danger', 'info'];
   const mapped = type === 'error' ? 'danger' : type;
   const safeType = validTypes.includes(mapped) ? mapped : 'info';
   toast.className = `toast toast--${safeType}`;
   toast.setAttribute('role', 'status');
-  toast.textContent = String(msg).slice(0, 200);  
+  toast.textContent = String(msg).slice(0, 200);
   container.appendChild(toast);
 
   /* eliminare dupa 3.3 secunde
-     dolosim un fade out CSS
+     folosim un fade out CSS
      printr-un transition pe opacity setat inline (asa nu
      adaugam un keyframe nou) */
   setTimeout(() => {
@@ -93,7 +93,37 @@ function initToasts() {
 }
 
 
-/* SETARI: TEMA, CONTRAST*/
+/*THEME*/
+const THEMES = [
+  { storageKey: 'theme-dark',         className: 'theme-ink',          toggleId: 'toggle-theme'        },
+  { storageKey: 'theme-green',        className: 'theme-green',        toggleId: 'toggle-green'        },
+  { storageKey: 'theme-sunsetorange', className: 'theme-sunsetorange', toggleId: 'toggle-sunsetorange' },
+  { storageKey: 'theme-sakura',       className: 'theme-sakura',       toggleId: 'toggle-sakura'       },
+  { storageKey: 'theme-ocean',        className: 'theme-ocean',        toggleId: 'toggle-ocean'        },
+];
+
+/* cand bifezi o tema, debifam toate celelalte */
+function clearOtherThemes(activeStorageKey) {
+  THEMES.forEach((t) => {
+    if (t.storageKey === activeStorageKey) return;
+    storage.set(t.storageKey, false);
+    document.documentElement.classList.remove(t.className);
+    const toggle = document.getElementById(t.toggleId);
+    if (toggle) toggle.checked = false;
+  });
+}
+
+function normalizeThemesAtBoot() {
+  const active = THEMES.filter((t) => !!storage.get(t.storageKey, false));
+  if (active.length > 1) {
+    const keep = active[0].storageKey;
+    THEMES.forEach((t) => {
+      if (t.storageKey !== keep) storage.set(t.storageKey, false);
+    });
+  }
+}
+
+
 function applyTheme() {
   const isDark = !!storage.get('theme-dark', false);
   if (isDark) {
@@ -112,10 +142,9 @@ function applyGreen() {
   } else {
     document.documentElement.classList.remove('theme-green');
   }
-  const toggle = document.getElementById('toggle-greenforest');
+  const toggle = document.getElementById('toggle-green');
   if (toggle) toggle.checked = isGreen;
 }
-
 
 function applyOrange() {
   const isorange = !!storage.get('theme-sunsetorange', false);
@@ -138,44 +167,42 @@ function applyContrast() {
   const toggle = document.getElementById('toggle-contrast');
   if (toggle) toggle.checked = high;
 }
-  function applySakura() {
-    const sakura = !!storage.get('theme-sakura', false);
-    if(sakura) {
-      document.documentElement.classList.add('theme-sakura');
-    } else {
-      document.documentElement.classList.remove('theme-sakura');
-    }
-  
-    const toggle = document.getElementById('toggle-sakura');
-    if(toggle) toggle.checked = sakura;
+
+function applySakura() {
+  const sakura = !!storage.get('theme-sakura', false);
+  if (sakura) {
+    document.documentElement.classList.add('theme-sakura');
+  } else {
+    document.documentElement.classList.remove('theme-sakura');
   }
-  
-  function applyOcean() {
-    const ocean = !!storage.get('theme-ocean', false);
-    if(ocean) {
-      document.documentElement.classList.add('theme-ocean');
-    } else {
-      document.documentElement.classList.remove('theme-ocean');
-    }
-  
-    const toggle = document.getElementById('toggle-ocean');
-    if(toggle) toggle.checked = ocean;
+  const toggle = document.getElementById('toggle-sakura');
+  if (toggle) toggle.checked = sakura;
+}
+
+function applyOcean() {
+  const ocean = !!storage.get('theme-ocean', false);
+  if (ocean) {
+    document.documentElement.classList.add('theme-ocean');
+  } else {
+    document.documentElement.classList.remove('theme-ocean');
   }
-  
+  const toggle = document.getElementById('toggle-ocean');
+  if (toggle) toggle.checked = ocean;
+}
+
 
 function initSettings() {
-  /* Tema. */
-  applyTheme();
-  const themeToggle = document.getElementById('toggle-theme');
-  if (themeToggle) {
-    themeToggle.addEventListener('change', () => {
-      storage.set('theme-dark', themeToggle.checked);
-      applyTheme();
-    });
-  }
+  /* normalizam din start daca ar fi mai multe teme bifate */
+  normalizeThemesAtBoot();
 
-  /* Contrast. */
+  /* aplicam toate o singura data (doar una va fi efectiv activa) */
+  applyTheme();
+  applyGreen();
+  applyOrange();
+  applySakura();
+  applyOcean();
   applyContrast();
+
   const contrastToggle = document.getElementById('toggle-contrast');
   if (contrastToggle) {
     contrastToggle.addEventListener('change', () => {
@@ -184,51 +211,59 @@ function initSettings() {
     });
   }
 
-  applyGreen();
+  /* dark */
+  const themeToggle = document.getElementById('toggle-theme');
+  if (themeToggle) {
+    themeToggle.addEventListener('change', () => {
+      if (themeToggle.checked) clearOtherThemes('theme-dark');
+      storage.set('theme-dark', themeToggle.checked);
+      applyTheme();
+    });
+  }
+
+  /* green */
   const greenToggle = document.getElementById('toggle-green');
   if (greenToggle) {
     greenToggle.addEventListener('change', () => {
+      if (greenToggle.checked) clearOtherThemes('theme-green');
       storage.set('theme-green', greenToggle.checked);
       applyGreen();
     });
   }
 
-   applyOrange();
+  /* orange */
   const orangeToggle = document.getElementById('toggle-sunsetorange');
   if (orangeToggle) {
     orangeToggle.addEventListener('change', () => {
+      if (orangeToggle.checked) clearOtherThemes('theme-sunsetorange');
       storage.set('theme-sunsetorange', orangeToggle.checked);
       applyOrange();
     });
   }
 
-    /sakura/
-    applySakura();
-    const sakuraToggle = document.getElementById('toggle-sakura');
-    if(sakuraToggle) {
-      sakuraToggle.addEventListener('change', () => {
-        storage.set('theme-sakura', sakuraToggle.checked);
-        applySakura();
-      });
-    }
-  
-    /ocean/
-    applyOcean();
-    const oceanToggle = document.getElementById('toggle-ocean');
-    if (oceanToggle) {
-      oceanToggle.addEventListener('change', () => {
-        storage.set('theme-ocean', oceanToggle.checked); 
-        applyOcean();
-      });
-    }
+  /* sakura */
+  const sakuraToggle = document.getElementById('toggle-sakura');
+  if (sakuraToggle) {
+    sakuraToggle.addEventListener('change', () => {
+      if (sakuraToggle.checked) clearOtherThemes('theme-sakura');
+      storage.set('theme-sakura', sakuraToggle.checked);
+      applySakura();
+    });
+  }
 
+  /* ocean */
+  const oceanToggle = document.getElementById('toggle-ocean');
+  if (oceanToggle) {
+    oceanToggle.addEventListener('change', () => {
+      if (oceanToggle.checked) clearOtherThemes('theme-ocean');
+      storage.set('theme-ocean', oceanToggle.checked);
+      applyOcean();
+    });
+  }
 }
-  
 
-/*
-   4. NOTIFICARI BROWSER
-   Cerem permisiunea explicita la click.
-   Nu cerem niciodata automat — utilizatorul ar putea respinge fara sa stie de ce.  */
+
+/* NOTIFICARI BROWSER */
 
 function updateNotificationStatus() {
   const status = document.getElementById('notifications-status');
@@ -286,7 +321,7 @@ function initNotifications() {
 }
 
 
-/* 5. EXPORT / IMPORT / RESET (TOATE DATELE) */
+/* EXPORT / IMPORT / RESET (TOATE DATELE) */
 
 function initExportImportReset() {
   /* export complet*/
@@ -389,9 +424,7 @@ function initExportImportReset() {
 }
 
 
-/*
-   6. DATA DIN HEADER ("Azi e [data]")
- */
+/* DATA DIN HEADER ("Azi e [data]") */
 
 function renderTodayDate() {
   const el = document.getElementById('today-date');
@@ -409,13 +442,7 @@ function renderTodayDate() {
   el.textContent = `${dayName}, ${dayNum} ${monthName}`;
 }
 
-/*
-   7. CLEANUP (memory leak prevention)
-
-   Cand utilizatorul inchide tab-ul, oprim timer-ele si listener-ele
-   din focus.js ca sa nu lasam resurse atarnate, pentru o aplicatie
-   client-side, browser-ul curata oricum
-*/
+/* CLEANUP (memory leak prevention) */
 
 function initCleanup() {
   window.addEventListener('beforeunload', () => {
@@ -426,15 +453,7 @@ function initCleanup() {
 }
 
 
-/* 
-   8. BOOT
-
-   asteptam DOMContentLoaded ca sa fim siguri ca toate
-   elementele HTML exista. Apoi initializam modulele in
-   ordinea: storage-uri (deja inclusiv) -> infrastructura
-   (toast, settings) -> features -> gamification (ultimul,
-   ca sa "asculte" tot ce dispatcheaza celelalte).
-    */
+/* BOOT */
 
 function boot() {
   initToasts();
@@ -467,7 +486,7 @@ function boot() {
   }
 }
 
-/*executare */ 
+/*executare */
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', boot);
 } else {
