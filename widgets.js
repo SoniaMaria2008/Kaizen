@@ -750,19 +750,37 @@ export function initQuotes() {
 
 
 /* player audio*/
+/* player audio */
 
 const TRACKS = {
-  lofi:    { label: 'Lo-fi',  emoji: '🎵', desc: 'Beat-uri linistite pentru concentrare' },
-  rain:    { label: 'Ploaie', emoji: '🌧️', desc: 'Sunet de ploaie blanda' },
-  silence: { label: 'Liniste', emoji: '🤫', desc: 'Niciun zgomot — doar tu si gandurile tale' }
+  lofi:    { label: 'Lo-fi',  emoji: '🎵', desc: 'Beat-uri linistite pentru concentrare', src: 'audio/lofi.mp3' },
+  rain:    { label: 'Ploaie', emoji: '🌧️', desc: 'Sunet de ploaie blanda',               src: 'audio/rain.mp3' },
+  silence: { label: 'Liniste', emoji: '🤫', desc: 'Niciun zgomot — doar tu si gandurile tale', src: null }
 };
 
 let activeTrack = null;
+let audioEl = null;
+
+/* un singur element <audio>, refolosit. Loop pornit, volum moderat. */
+function ensureAudioEl() {
+  if (audioEl) return audioEl;
+  audioEl = new Audio();
+  audioEl.loop = true;
+  audioEl.volume = 0.5;
+  audioEl.preload = 'none';  // nu descarcam pana nu apasa user-ul
+  audioEl.addEventListener('error', () => {
+    const status = document.getElementById('audio-status');
+    if (status) status.textContent = 'Eroare: nu am putut incarca pista. Verifica ca fisierul exista.';
+  });
+  return audioEl;
+}
 
 function setActiveTrack(trackId) {
+  /* toggle: daca dam click pe pista activa, o oprim */
   if (activeTrack === trackId) activeTrack = null;
   else activeTrack = trackId;
 
+  /* update butoane (vizual + aria) */
   const buttons = document.querySelectorAll('.audio-player__track');
   buttons.forEach((btn) => {
     if (btn.dataset.track === activeTrack) {
@@ -774,11 +792,31 @@ function setActiveTrack(trackId) {
     }
   });
 
+  /* logica de redare */
+
+  const el = ensureAudioEl();
+  if (!activeTrack) {
+    el.pause();
+  } else {
+    const t = TRACKS[activeTrack];
+    if (t.src) {
+      /* schimbam sursa doar daca e diferita */
+      if (!el.src || !el.src.endsWith(t.src)) {
+        el.src = t.src;
+      }
+      el.play().catch((err) => console.warn('[Audio] redare blocata:', err));
+    } else {
+      /* pista "silence" - sto[*/
+      el.pause();
+    }
+  }
+
+  /* status text */
   const status = document.getElementById('audio-status');
   if (status) {
     if (activeTrack && TRACKS[activeTrack]) {
       const t = TRACKS[activeTrack];
-      status.textContent = `${t.emoji} ${t.label} — ${t.desc} (simulat)`;
+      status.textContent = `${t.emoji} ${t.label} — ${t.desc}`;
     } else {
       status.textContent = 'Nicio sursa selectata';
     }
@@ -794,6 +832,13 @@ export function initAudio() {
       if (trackId) setActiveTrack(trackId);
     });
   });
+
+  const volumeSlider = document.getElementById('audio-volume');
+      if (volumeSlider) {
+        volumeSlider.addEventListener('input', (e) => {
+          ensureAudioEl().volume = e.target.value / 100;
+        });
+      }
 }
 
 export function init() {
